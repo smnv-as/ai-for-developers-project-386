@@ -25,7 +25,9 @@ make clean
 ├── openapi.yaml     # Сгенерированный OpenAPI-контракт
 ├── package.json     # Зависимости npm
 ├── tspconfig.yaml   # Конфигурация TypeSpec-компилятора
-└── Makefile         # Команды сборки
+├── Makefile         # Команды сборки
+└── frontend/        # React-фронтенд
+    └── src/
 ```
 
 ## API Endpoints
@@ -102,6 +104,42 @@ make clean
 ```bash
 # Полная пересборка
 make clean && make install && make compile
+```
+
+## Фронтенд
+
+Фронтенд — отдельное React-приложение в директории `frontend/`.
+
+### Запуск фронтенда
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Откроется на `http://localhost:3000`. MSW-мок启动 автоматически.
+
+### Переменные окружения
+
+```bash
+VITE_USE_MOCK=true    # MSW мок (по умолчанию)
+VITE_USE_MOCK=false   # Реальный бэкенд
+VITE_API_URL=/api     # Базовый URL API
+```
+
+### Структура фронтенда
+
+```
+frontend/
+├── src/
+│   ├── api/          # API-клиент и типы
+│   ├── mocks/        # MSW мок с бизнес-логикой
+│   ├── pages/
+│   │   ├── public/   # Публичный флоу
+│   │   └── admin/    # React-admin панель
+│   └── components/   # Общие компоненты
+└── package.json
 ```
 
 ### Hexlet tests and linter status:

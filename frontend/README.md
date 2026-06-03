@@ -1,73 +1,86 @@
-# React + TypeScript + Vite
+# Booking API Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React-приложение для системы бронирования 30-минутных слотов.
 
-Currently, two official plugins are available:
+## Быстрый старт
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+# Установка зависимостей
+npm install
 
-## React Compiler
+# Запуск dev-сервера (с моком API)
+npm run dev
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# Запуск тестов
+npm run test
+npm run test:run
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Сборка
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Переменные окружения
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+VITE_USE_MOCK=true    # Использовать MSW мок (по умолчанию)
+VITE_API_URL=/api     # Базовый URL API
 ```
+
+Для работы с реальным бэкендом:
+
+```bash
+VITE_USE_MOCK=false
+VITE_API_URL=http://localhost:3001
+```
+
+## Архитектура
+
+```
+src/
+├── api/
+│   ├── client.ts      # Axios-клиент для API
+│   └── types.ts       # TypeScript-типы из OpenAPI
+├── components/
+│   ├── PublicLayout.tsx  # Лейаут для публичных страниц
+│   └── ErrorBoundary.tsx # Обработка ошибок React
+├── i18n/
+│   └── ru.ts          # Русские переводы (react-admin)
+├── mocks/
+│   ├── browser.ts     # MSW browser worker
+│   ├── server.ts      # MSW node server (тесты)
+│   ├── handlers.ts    # Обработчики API endpoints
+│   ├── dataStore.ts   # In-memory хранилище
+│   └── businessLogic.ts # Бизнес-логика (генерация слотов, валидация)
+├── pages/
+│   ├── public/
+│   │   ├── HomePage.tsx
+│   │   ├── SlotsPage.tsx
+│   │   ├── BookingPage.tsx
+│   │   └── BookingSuccess.tsx
+│   └── admin/
+│       ├── AdminApp.tsx
+│       ├── EventTypeResource.tsx
+│       ├── BookingResource.tsx
+│       └── dataProvider.ts
+├── theme.ts           # MUI theme
+├── App.tsx            # Роутер приложения
+└── main.tsx           # Точка входа
+```
+
+## Публичный флоу
+
+1. `/` — выбор типа события
+2. `/slots?eventTypeId=` — просмотр доступных слотов
+3. `/booking?eventTypeId=&startTime=` — форма бронирования
+4. `/success` — подтверждение
+
+## Админка
+
+`/admin` — React-admin панель:
+- CRUD для типов событий
+- Просмотр бронирований
+- Фильтрация по датам и типу события
+
+## API контракт
+
+Контракт API описан в TypeSpec и сгенерирован в `openapi.yaml` в корне проекта.
