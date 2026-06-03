@@ -10,11 +10,11 @@ import { validateBookingRequest, generateSlots, generateId } from './businessLog
 import type { CreateBookingRequest, CreateEventTypeRequest, UpdateEventTypeRequest } from '../api/types'
 
 export const handlers = [
-  http.get('/event-types', () => {
+  http.get('/api/event-types', () => {
     return HttpResponse.json(dataStore.eventTypes)
   }),
 
-  http.get('/slots', ({ request }) => {
+  http.get('/api/slots', ({ request }) => {
     const url = new URL(request.url)
     const eventTypeId = url.searchParams.get('eventTypeId') ?? ''
     const from = url.searchParams.get('from') ?? undefined
@@ -24,7 +24,7 @@ export const handlers = [
     return HttpResponse.json(slots)
   }),
 
-  http.post('/bookings', async ({ request }) => {
+  http.post('/api/bookings', async ({ request }) => {
     const body = (await request.json()) as CreateBookingRequest
 
     const validation = validateBookingRequest(body)
@@ -63,7 +63,7 @@ export const handlers = [
     return HttpResponse.json(booking, { status: 200 })
   }),
 
-  http.delete('/bookings/:id', ({ params }) => {
+  http.delete('/api/bookings/:id', ({ params }) => {
     const { id } = params as { id: string }
     const booking = findBookingById(id)
 
@@ -82,11 +82,28 @@ export const handlers = [
     return new HttpResponse(null, { status: 204 })
   }),
 
-  http.get('/admin/event-types', () => {
-    return HttpResponse.json(dataStore.eventTypes)
+  http.get('/api/admin/event-types', () => {
+    const total = dataStore.eventTypes.length
+    return HttpResponse.json(dataStore.eventTypes, {
+      headers: {
+        'Content-Range': `event-types 0-${total - 1}/${total}`,
+      },
+    })
   }),
 
-  http.post('/admin/event-types', async ({ request }) => {
+  http.get('/api/admin/event-types/:id', ({ params }) => {
+    const { id } = params as { id: string }
+    const eventType = findEventTypeById(id)
+    if (!eventType) {
+      return HttpResponse.json(
+        { code: 'not_found', message: 'Тип события не найден' },
+        { status: 404 },
+      )
+    }
+    return HttpResponse.json(eventType)
+  }),
+
+  http.post('/api/admin/event-types', async ({ request }) => {
     const body = (await request.json()) as CreateEventTypeRequest
     const newEventType = {
       id: `et-${Date.now()}`,
@@ -97,7 +114,7 @@ export const handlers = [
     return HttpResponse.json(newEventType, { status: 200 })
   }),
 
-  http.put('/admin/event-types/:id', async ({ params, request }) => {
+  http.put('/api/admin/event-types/:id', async ({ params, request }) => {
     const { id } = params as { id: string }
     const body = (await request.json()) as UpdateEventTypeRequest
     const eventType = findEventTypeById(id)
@@ -114,7 +131,7 @@ export const handlers = [
     return HttpResponse.json(dataStore.eventTypes[index])
   }),
 
-  http.delete('/admin/event-types/:id', ({ params }) => {
+  http.delete('/api/admin/event-types/:id', ({ params }) => {
     const { id } = params as { id: string }
     const eventType = findEventTypeById(id)
 
@@ -140,7 +157,7 @@ export const handlers = [
     return new HttpResponse(null, { status: 204 })
   }),
 
-  http.get('/admin/bookings', ({ request }) => {
+  http.get('/api/admin/bookings', ({ request }) => {
     const url = new URL(request.url)
     const from = url.searchParams.get('from') ?? undefined
     const to = url.searchParams.get('to') ?? undefined
@@ -160,6 +177,23 @@ export const handlers = [
       bookings = bookings.filter((b) => b.eventTypeId === eventTypeId)
     }
 
-    return HttpResponse.json(bookings)
+    const total = bookings.length
+    return HttpResponse.json(bookings, {
+      headers: {
+        'Content-Range': `bookings 0-${total - 1}/${total}`,
+      },
+    })
+  }),
+
+  http.get('/api/admin/bookings/:id', ({ params }) => {
+    const { id } = params as { id: string }
+    const booking = findBookingById(id)
+    if (!booking) {
+      return HttpResponse.json(
+        { code: 'not_found', message: 'Бронирование не найдено' },
+        { status: 404 },
+      )
+    }
+    return HttpResponse.json(booking)
   }),
 ]

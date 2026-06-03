@@ -4,7 +4,7 @@ import { EventTypeList, EventTypeCreate, EventTypeEdit, EventTypeShow } from './
 import { BookingList } from './BookingResource'
 
 export const AdminApp = () => (
-  <Admin dataProvider={simpleRestProvider('/api')}>
+  <Admin dataProvider={simpleRestProvider('/api/admin')} basename="/admin">
     <Resource
       name="event-types"
       list={EventTypeList}
