@@ -21,11 +21,8 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* Paths */
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    /* Suppress deprecated baseUrl */
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src"]
 }

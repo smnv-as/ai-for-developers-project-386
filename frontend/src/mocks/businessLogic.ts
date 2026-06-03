@@ -88,7 +88,9 @@ export function generateSlots(
 
 export function validateBookingRequest(
   request: CreateBookingRequest,
-): { valid: boolean; errorCode?: string; errorMessage?: string } {
+): | { valid: true }
+  | { valid: false; errorCode: 'slot_already_booked'; errorMessage: string; conflictingBookingId: string }
+  | { valid: false; errorCode: 'validation_error'; errorMessage: string } {
   const slotStart = new Date(request.startTime)
 
   if (isInPast(slotStart)) {

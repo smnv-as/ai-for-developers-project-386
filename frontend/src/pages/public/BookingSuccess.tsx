@@ -1,4 +1,4 @@
-import { Typography, Box, Paper, Button } from '@mui/material'
+import { Typography, Paper, Button } from '@mui/material'
 import { Link } from 'react-router-dom'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { PublicLayout } from '../../components/PublicLayout'

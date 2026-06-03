@@ -6,12 +6,6 @@ import type {
   CreateBookingRequest,
   CreateEventTypeRequest,
   UpdateEventTypeRequest,
-  NotFoundError,
-  SlotAlreadyBookedError,
-  ValidationError,
-  EventTypeHasBookingsError,
-  ListAdminBookingsParams,
-  ListSlotsParams,
 } from './types'
 
 const client = axios.create({
@@ -33,13 +27,8 @@ export class ApiError extends Error {
 client.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    const data = error.response?.data as
-      | NotFoundError
-      | SlotAlreadyBookedError
-      | ValidationError
-      | EventTypeHasBookingsError
-      | { code?: string; message?: string }
-    if (data && typeof data === 'object' && 'code' in data && 'message' in data) {
+    const data = error.response?.data as { code?: string; message?: string }
+    if (data && typeof data === 'object' && 'code' in data && 'message' in data && data.code && data.message) {
       return Promise.reject(new ApiError(data.code, data.message))
     }
     return Promise.reject(error)
@@ -54,16 +43,14 @@ export const eventTypesApi = {
 }
 
 export const slotsApi = {
-  list: async (params: ListSlotsParams): Promise<Slot[]> => {
+  list: async (params: { eventTypeId: string; from?: string; to?: string }): Promise<Slot[]> => {
     const { data } = await client.get<Slot[]>('/slots', { params })
     return data
   },
 }
 
 export const bookingsApi = {
-  create: async (
-    request: CreateBookingRequest,
-  ): Promise<Booking> => {
+  create: async (request: CreateBookingRequest): Promise<Booking> => {
     const { data } = await client.post<Booking>('/bookings', request)
     return data
   },
@@ -81,14 +68,8 @@ export const adminEventTypesApi = {
     const { data } = await client.post<EventType>('/admin/event-types', request)
     return data
   },
-  update: async (
-    id: string,
-    request: UpdateEventTypeRequest,
-  ): Promise<EventType> => {
-    const { data } = await client.put<EventType>(
-      `/admin/event-types/${id}`,
-      request,
-    )
+  update: async (id: string, request: UpdateEventTypeRequest): Promise<EventType> => {
+    const { data } = await client.put<EventType>(`/admin/event-types/${id}`, request)
     return data
   },
   delete: async (id: string): Promise<void> => {
@@ -97,7 +78,7 @@ export const adminEventTypesApi = {
 }
 
 export const adminBookingsApi = {
-  list: async (params?: ListAdminBookingsParams): Promise<Booking[]> => {
+  list: async (params?: { from?: string; to?: string; eventTypeId?: string }): Promise<Booking[]> => {
     const { data } = await client.get<Booking[]>('/admin/bookings', { params })
     return data
   },

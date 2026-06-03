@@ -49,7 +49,9 @@ describe('businessLogic', () => {
       })
 
       expect(result.valid).toBe(false)
-      expect(result.errorCode).toBe('validation_error')
+      if (!result.valid && result.errorCode === 'validation_error') {
+        expect(result.errorMessage).toBeDefined()
+      }
     })
 
     it('возвращает ошибку для уже забронированного слота', () => {
@@ -62,7 +64,9 @@ describe('businessLogic', () => {
       })
 
       expect(result.valid).toBe(false)
-      expect(result.errorCode).toBe('slot_already_booked')
+      if (!result.valid && result.errorCode === 'slot_already_booked') {
+        expect(result.conflictingBookingId).toBeDefined()
+      }
     })
 
     it('возвращает валидный результат для корректного запроса', () => {

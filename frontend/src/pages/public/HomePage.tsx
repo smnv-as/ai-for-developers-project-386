@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, CardContent, CardActions, Typography, Grid, Button, Box } from '@mui/material'
+import { Card, CardContent, CardActions, Typography, Grid, Button } from '@mui/material'
 import { PublicLayout } from '../../components/PublicLayout'
 import { eventTypesApi } from '../../api/client'
 import type { EventType } from '../../api/types'
@@ -20,7 +20,7 @@ export const HomePage = () => {
       </Typography>
       <Grid container spacing={3}>
         {eventTypes.map((et) => (
-          <Grid key={et.id} size={{ xs: 12, sm: 6, md: 4 }}>
+          <Grid item xs={12} sm={6} md={4} key={et.id}>
             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <CardContent sx={{ flexGrow: 1 }}>
                 <Typography variant="h6" gutterBottom>

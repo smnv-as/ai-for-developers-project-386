@@ -3,14 +3,11 @@ import {
   Create,
   Edit,
   Show,
-  Delete,
   Datagrid,
   TextField,
   SimpleForm,
   TextInput,
   required,
-  DeleteButton,
-  RecordContextProvider,
 } from 'react-admin'
 
 export const EventTypeList = () => (

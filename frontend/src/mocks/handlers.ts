@@ -4,9 +4,7 @@ import {
   addBooking,
   findEventTypeById,
   findBookingById,
-  findBookingsByEventTypeId,
   deleteEventTypeCascade,
-  isSlotBooked,
 } from './dataStore'
 import { validateBookingRequest, generateSlots, generateId } from './businessLogic'
 import type { CreateBookingRequest, CreateEventTypeRequest, UpdateEventTypeRequest } from '../api/types'
@@ -34,7 +32,7 @@ export const handlers = [
       if (validation.errorCode === 'slot_already_booked') {
         return HttpResponse.json(
           {
-            code: 'slot_already_booked',
+            code: 'slot_already_booked' as const,
             message: validation.errorMessage,
             conflictingBookingId: validation.conflictingBookingId,
           },
@@ -76,7 +74,7 @@ export const handlers = [
       )
     }
 
-    const index = dataStore.bookings.findIndex(b => b.id === id)
+    const index = dataStore.bookings.findIndex((b) => b.id === id)
     if (index !== -1) {
       dataStore.bookings.splice(index, 1)
     }
@@ -111,7 +109,7 @@ export const handlers = [
       )
     }
 
-    const index = dataStore.eventTypes.findIndex(et => et.id === id)
+    const index = dataStore.eventTypes.findIndex((et) => et.id === id)
     dataStore.eventTypes[index] = { ...eventType, ...body }
     return HttpResponse.json(dataStore.eventTypes[index])
   }),
@@ -127,7 +125,7 @@ export const handlers = [
       )
     }
 
-    const hasBookings = dataStore.bookings.some(b => b.eventTypeId === id)
+    const hasBookings = dataStore.bookings.some((b) => b.eventTypeId === id)
     if (hasBookings) {
       return HttpResponse.json(
         {
@@ -152,14 +150,14 @@ export const handlers = [
 
     if (from) {
       const fromDate = new Date(from)
-      bookings = bookings.filter(b => new Date(b.startTime) >= fromDate)
+      bookings = bookings.filter((b) => new Date(b.startTime) >= fromDate)
     }
     if (to) {
       const toDate = new Date(to)
-      bookings = bookings.filter(b => new Date(b.startTime) <= toDate)
+      bookings = bookings.filter((b) => new Date(b.startTime) <= toDate)
     }
     if (eventTypeId) {
-      bookings = bookings.filter(b => b.eventTypeId === eventTypeId)
+      bookings = bookings.filter((b) => b.eventTypeId === eventTypeId)
     }
 
     return HttpResponse.json(bookings)
