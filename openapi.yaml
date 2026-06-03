@@ -1,0 +1,367 @@
+openapi: 3.0.0
+info:
+  title: Booking API
+  description: |-
+    API for booking 30-minute appointment slots.
+
+    **Business Rules:**
+    - All events are exactly 30 minutes
+    - Working hours: 09:00-18:00, Monday-Friday, Europe/Moscow timezone
+    - Available booking window: 14 days starting from today
+    - Slots are on :00 and :30 minute boundaries only
+    - Booking a slot creates a hard delete record; deleting an event type cascades to its bookings
+    - No authentication; admin operations are under /admin path
+  version: 0.0.0
+tags: []
+paths:
+  /admin/bookings:
+    get:
+      operationId: AdminBookings_listAdminBookings
+      parameters:
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          explode: false
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          explode: false
+        - name: eventTypeId
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+  /admin/event-types:
+    get:
+      operationId: AdminEventTypes_listAdminEventTypes
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventType'
+    post:
+      operationId: AdminEventTypes_createEventType
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventType'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEventTypeRequest'
+  /admin/event-types/{id}:
+    put:
+      operationId: AdminEventTypes_updateEventType
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventType'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEventTypeRequest'
+    delete:
+      operationId: AdminEventTypes_deleteEventType
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/NotFoundError'
+                  - $ref: '#/components/schemas/EventTypeHasBookingsError'
+  /bookings:
+    post:
+      operationId: Bookings_createBooking
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/SlotAlreadyBookedError'
+                  - $ref: '#/components/schemas/ValidationError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+  /bookings/{id}:
+    delete:
+      operationId: Bookings_cancelBooking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+  /event-types:
+    get:
+      operationId: EventTypes_listEventTypes
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventType'
+  /slots:
+    get:
+      operationId: Slots_listSlots
+      parameters:
+        - name: eventTypeId
+          in: query
+          required: true
+          schema:
+            type: string
+          explode: false
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          explode: false
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Slot'
+components:
+  schemas:
+    Booking:
+      type: object
+      required:
+        - id
+        - eventTypeId
+        - startTime
+        - endTime
+      properties:
+        id:
+          type: string
+        eventTypeId:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+      allOf:
+        - $ref: '#/components/schemas/GuestInfo'
+    CreateBookingRequest:
+      type: object
+      required:
+        - eventTypeId
+        - startTime
+        - guestName
+        - guestEmail
+      properties:
+        eventTypeId:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        guestName:
+          type: string
+        guestEmail:
+          type: string
+        guestPhone:
+          type: string
+        notes:
+          type: string
+    CreateEventTypeRequest:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    EventType:
+      type: object
+      required:
+        - id
+        - name
+        - description
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+    EventTypeHasBookingsError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          enum:
+            - event_type_has_bookings
+        message:
+          type: string
+    GuestInfo:
+      type: object
+      required:
+        - guestName
+        - guestEmail
+      properties:
+        guestName:
+          type: string
+        guestEmail:
+          type: string
+        guestPhone:
+          type: string
+        notes:
+          type: string
+    NotFoundError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          enum:
+            - not_found
+        message:
+          type: string
+    Slot:
+      type: object
+      required:
+        - startTime
+        - endTime
+      properties:
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+    SlotAlreadyBookedError:
+      type: object
+      required:
+        - code
+        - message
+        - conflictingBookingId
+      properties:
+        code:
+          type: string
+          enum:
+            - slot_already_booked
+        message:
+          type: string
+        conflictingBookingId:
+          type: string
+    UpdateEventTypeRequest:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    ValidationError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          enum:
+            - validation_error
+        message:
+          type: string
