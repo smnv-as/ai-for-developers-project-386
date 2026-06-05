@@ -77,7 +77,16 @@ func (e ValidationErrorCode) Valid() bool {
 }
 
 // Booking defines model for Booking.
-type Booking = GuestInfo
+type Booking struct {
+	EndTime     time.Time `json:"endTime"`
+	EventTypeId string    `json:"eventTypeId"`
+	GuestEmail  string    `json:"guestEmail"`
+	GuestName   string    `json:"guestName"`
+	GuestPhone  *string   `json:"guestPhone,omitempty"`
+	Id          string    `json:"id"`
+	Notes       *string   `json:"notes,omitempty"`
+	StartTime   time.Time `json:"startTime"`
+}
 
 // CreateBookingRequest defines model for CreateBookingRequest.
 type CreateBookingRequest struct {
