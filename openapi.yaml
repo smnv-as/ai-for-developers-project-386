@@ -215,25 +215,25 @@ paths:
 components:
   schemas:
     Booking:
-      type: object
-      required:
-        - id
-        - eventTypeId
-        - startTime
-        - endTime
-      properties:
-        id:
-          type: string
-        eventTypeId:
-          type: string
-        startTime:
-          type: string
-          format: date-time
-        endTime:
-          type: string
-          format: date-time
       allOf:
         - $ref: '#/components/schemas/GuestInfo'
+        - type: object
+          required:
+            - id
+            - eventTypeId
+            - startTime
+            - endTime
+          properties:
+            id:
+              type: string
+            eventTypeId:
+              type: string
+            startTime:
+              type: string
+              format: date-time
+            endTime:
+              type: string
+              format: date-time
     CreateBookingRequest:
       type: object
       required:

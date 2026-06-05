@@ -125,6 +125,10 @@ func (s *Service) ListBookings(ctx context.Context, from, to *time.Time, eventTy
 	return s.repo.ListBookings(ctx, from, to, eventTypeID)
 }
 
+func (s *Service) GetBooking(ctx context.Context, id string) (*repository.BookingEntity, error) {
+	return s.repo.GetBookingByID(ctx, id)
+}
+
 // Slots generation
 
 func (s *Service) ListSlots(ctx context.Context, eventTypeID string, from, to *time.Time) ([]SlotInfo, error) {

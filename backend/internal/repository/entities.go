@@ -17,14 +17,14 @@ func (EventTypeEntity) TableName() string {
 }
 
 type BookingEntity struct {
-	ID          string    `gorm:"primaryKey;type:text"`
-	EventTypeID string   `gorm:"type:text;not null;index"`
-	StartTime   time.Time `gorm:"type:text;not null;index"`
-	EndTime     time.Time `gorm:"type:text;not null"`
-	GuestName   string   `gorm:"type:text;not null"`
-	GuestEmail  string   `gorm:"type:text;not null"`
-	GuestPhone  *string  `gorm:"type:text"`
-	Notes       *string  `gorm:"type:text"`
+	ID          string    `gorm:"primaryKey"`
+	EventTypeID string   `gorm:"index"`
+	StartTime   time.Time `gorm:"index"`
+	EndTime     time.Time
+	GuestName   string
+	GuestEmail  string
+	GuestPhone  *string
+	Notes       *string
 	CreatedAt   time.Time `gorm:"autoCreateTime"`
 	UpdatedAt   time.Time `gorm:"autoUpdateTime"`
 }
