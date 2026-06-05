@@ -78,8 +78,9 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '>=1.21'
-          cache: true
-          cache-dependency-path: backend/go.sum
+
+      - name: Copy openapi.yaml for embed
+        run: cp openapi.yaml backend/cmd/server/openapi.yaml
 
       - name: Run backend tests
         working-directory: backend
