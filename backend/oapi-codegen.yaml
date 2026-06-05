@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/main/configuration-schema.json
+package: api
+generate:
+  echo-server: true
+  strict-server: true
+  models: true
+output: internal/api/api.gen.go
+import-mapping:
+  "": booking-api/internal/api
