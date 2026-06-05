@@ -1,4 +1,4 @@
-.PHONY: generate clean test run dev server build
+.PHONY: generate clean test run build
 
 # Generate Go code from OpenAPI spec
 generate:
@@ -20,11 +20,3 @@ run:
 # Run backend tests
 test:
 	go test -v ./...
-
-# Run frontend + backend together
-dev:
-	@echo "Starting backend on :8080..."
-	@(go run ./cmd/server &) && \
-	sleep 2 && \
-	echo "Starting frontend on :5173..." && \
-	cd ../frontend && npm run dev
