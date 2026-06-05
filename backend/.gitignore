@@ -29,3 +29,6 @@ vendor/
 # OS
 .DS_Store
 Thumbs.db
+
+# OpenAPI spec (embedded at build time)
+cmd/server/openapi.yaml

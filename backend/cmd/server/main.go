@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -19,6 +21,9 @@ import (
 	"booking-api/internal/repository"
 	"booking-api/internal/service"
 )
+
+//go:embed openapi.yaml
+var openapiSpec []byte
 
 func main() {
 	cfg := config.Load()
@@ -66,6 +71,10 @@ func main() {
 
 	e.GET("/health", func(c echo.Context) error {
 		return c.JSON(200, map[string]string{"status": "ok"})
+	})
+
+	e.GET("/openapi.yaml", func(c echo.Context) error {
+		return c.Blob(http.StatusOK, "application/x-yaml", openapiSpec)
 	})
 
 	api.RegisterHandlers(e, api.NewStrictHandler(h, nil))
