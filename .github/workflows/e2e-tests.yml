@@ -39,6 +39,9 @@ jobs:
         working-directory: frontend
         run: npx playwright install --with-deps chromium
 
+      - name: Copy openapi.yaml for embed
+        run: cp openapi.yaml backend/cmd/server/openapi.yaml
+
       - name: Build backend
         working-directory: backend
         run: go build -o booking-api ./cmd/server
