@@ -96,7 +96,7 @@ export const BookingPage = () => {
         <Typography variant="body1" color="text.secondary" gutterBottom>
           Дата и время: {formatDateTime(startTime)}
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }} data-testid="booking-form">
           <TextField
             fullWidth
             label="Имя"
@@ -105,6 +105,9 @@ export const BookingPage = () => {
             error={!!errors.guestName}
             helperText={errors.guestName}
             sx={{ mb: 2 }}
+            slotProps={{
+              htmlInput: { 'data-testid': 'guest-name-input' }
+            }}
           />
           <TextField
             fullWidth
@@ -115,6 +118,9 @@ export const BookingPage = () => {
             error={!!errors.guestEmail}
             helperText={errors.guestEmail}
             sx={{ mb: 2 }}
+            slotProps={{
+              htmlInput: { 'data-testid': 'guest-email-input' }
+            }}
           />
           <TextField
             fullWidth
@@ -122,6 +128,9 @@ export const BookingPage = () => {
             value={form.guestPhone}
             onChange={handleChange('guestPhone')}
             sx={{ mb: 2 }}
+            slotProps={{
+              htmlInput: { 'data-testid': 'guest-phone-input' }
+            }}
           />
           <TextField
             fullWidth
@@ -131,8 +140,11 @@ export const BookingPage = () => {
             multiline
             rows={3}
             sx={{ mb: 3 }}
+            slotProps={{
+              htmlInput: { 'data-testid': 'guest-notes-input' }
+            }}
           />
-          <Button type="submit" variant="contained" disabled={loading}>
+          <Button type="submit" variant="contained" disabled={loading} data-testid="submit-booking-button">
             {loading ? 'Отправка...' : 'Забронировать'}
           </Button>
         </Box>
@@ -142,7 +154,7 @@ export const BookingPage = () => {
         autoHideDuration={6000}
         onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
       >
-        <Alert severity={snackbar.severity} onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}>
+        <Alert severity={snackbar.severity} onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))} data-testid="booking-error-alert">
           {snackbar.message}
         </Alert>
       </Snackbar>

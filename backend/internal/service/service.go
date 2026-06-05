@@ -67,12 +67,8 @@ func (s *Service) UpdateEventType(ctx context.Context, id string, req *repositor
 }
 
 func (s *Service) DeleteEventType(ctx context.Context, id string) error {
-	hasBookings, err := s.repo.EventTypeHasBookings(ctx, id)
-	if err != nil {
+	if err := s.repo.DeleteBookingsByEventType(ctx, id); err != nil {
 		return err
-	}
-	if hasBookings {
-		return &domain.EventTypeHasBookingsError{EventTypeID: id}
 	}
 	if err := s.repo.DeleteEventType(ctx, id); err != nil {
 		return err

@@ -6,7 +6,7 @@ import { theme } from './theme'
 import App from './App'
 
 async function prepare() {
-  if (import.meta.env.VITE_USE_MOCK !== 'false') {
+  if (import.meta.env.VITE_USE_MOCK === 'true') {
     const { worker } = await import('./mocks/browser')
     return worker.start({ onUnhandledRequest: 'bypass' })
   }

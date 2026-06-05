@@ -18,7 +18,7 @@ func (EventTypeEntity) TableName() string {
 
 type BookingEntity struct {
 	ID          string    `gorm:"primaryKey"`
-	EventTypeID string   `gorm:"index"`
+	EventTypeID string    `gorm:"index;onDelete:CASCADE"`
 	StartTime   time.Time `gorm:"index"`
 	EndTime     time.Time
 	GuestName   string

@@ -42,13 +42,13 @@ export const SlotsPage = () => {
 
   return (
     <PublicLayout>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom data-testid="slots-page-heading">
         Доступные слоты
       </Typography>
       {groupedSlots.length === 0 ? (
-        <Typography color="text.secondary">Нет доступных слотов</Typography>
+        <Typography color="text.secondary" data-testid="no-slots-message">Нет доступных слотов</Typography>
       ) : (
-        <Box sx={{ mt: 2 }}>
+        <Box sx={{ mt: 2 }} data-testid="slots-list">
           {groupedSlots.map(({ date, slots }) => (
             <Accordion key={date} defaultExpanded>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -59,6 +59,7 @@ export const SlotsPage = () => {
                   {slots.map((slot) => (
                     <ListItem
                       key={slot.startTime}
+                      data-testid={`slot-item-${slot.startTime.replace(/[:.]/g, '-')}`}
                       secondaryAction={
                         <Button
                           variant="outlined"
@@ -66,6 +67,7 @@ export const SlotsPage = () => {
                           onClick={() =>
                             navigate(`/booking?eventTypeId=${eventTypeId}&startTime=${slot.startTime}`)
                           }
+                          data-testid={`book-slot-button-${slot.startTime.replace(/[:.]/g, '-')}`}
                         >
                           Забронировать
                         </Button>

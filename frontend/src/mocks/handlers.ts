@@ -48,11 +48,13 @@ export const handlers = [
       )
     }
 
+    const endTime = new Date(new Date(body.startTime).getTime() + 30 * 60000).toISOString()
+
     const booking = {
       id: generateId(),
       eventTypeId: body.eventTypeId,
       startTime: body.startTime,
-      endTime: body.startTime,
+      endTime: endTime,
       guestName: body.guestName,
       guestEmail: body.guestEmail,
       guestPhone: body.guestPhone,
@@ -139,17 +141,6 @@ export const handlers = [
       return HttpResponse.json(
         { code: 'not_found', message: 'Тип события не найден' },
         { status: 404 },
-      )
-    }
-
-    const hasBookings = dataStore.bookings.some((b) => b.eventTypeId === id)
-    if (hasBookings) {
-      return HttpResponse.json(
-        {
-          code: 'event_type_has_bookings',
-          message: 'Нельзя удалить тип события, связанный с бронированиями',
-        },
-        { status: 409 },
       )
     }
 

@@ -2,6 +2,9 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
 	"time"
 
 	"booking-api/internal/api"
@@ -9,6 +12,30 @@ import (
 	"booking-api/internal/mapper"
 	"booking-api/internal/service"
 )
+
+type adminEventTypesListResponse struct {
+	items []api.EventType
+	total int
+}
+
+func (r adminEventTypesListResponse) VisitAdminEventTypesListAdminEventTypesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Range", fmt.Sprintf("event-types 0-%d/%d", len(r.items)-1, r.total))
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	return json.NewEncoder(w).Encode(r.items)
+}
+
+type adminBookingsListResponse struct {
+	items []api.Booking
+	total int
+}
+
+func (r adminBookingsListResponse) VisitAdminBookingsListAdminBookingsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Range", fmt.Sprintf("bookings 0-%d/%d", len(r.items)-1, r.total))
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	return json.NewEncoder(w).Encode(r.items)
+}
 
 type Handler struct {
 	svc *service.Service
@@ -43,7 +70,7 @@ func (h *Handler) AdminBookingsListAdminBookings(ctx context.Context, request ap
 		apiBookings[i] = mapper.BookingEntityToAPI(&e)
 	}
 
-	return api.AdminBookingsListAdminBookings200JSONResponse(apiBookings), nil
+	return adminBookingsListResponse{items: apiBookings, total: len(apiBookings)}, nil
 }
 
 func (h *Handler) AdminEventTypesListAdminEventTypes(ctx context.Context, request api.AdminEventTypesListAdminEventTypesRequestObject) (api.AdminEventTypesListAdminEventTypesResponseObject, error) {
@@ -57,7 +84,7 @@ func (h *Handler) AdminEventTypesListAdminEventTypes(ctx context.Context, reques
 		apiTypes[i] = mapper.EventTypeEntityToAPI(&e)
 	}
 
-	return api.AdminEventTypesListAdminEventTypes200JSONResponse(apiTypes), nil
+	return adminEventTypesListResponse{items: apiTypes, total: len(apiTypes)}, nil
 }
 
 func (h *Handler) AdminEventTypesCreateEventType(ctx context.Context, request api.AdminEventTypesCreateEventTypeRequestObject) (api.AdminEventTypesCreateEventTypeResponseObject, error) {

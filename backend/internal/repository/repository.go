@@ -65,6 +65,10 @@ func (r *Repository) EventTypeHasBookings(ctx context.Context, eventTypeID strin
 	return count > 0, nil
 }
 
+func (r *Repository) DeleteBookingsByEventType(ctx context.Context, eventTypeID string) error {
+	return r.db.WithContext(ctx).Where("event_type_id = ?", eventTypeID).Delete(&BookingEntity{}).Error
+}
+
 // Booking operations
 
 func (r *Repository) CreateBooking(ctx context.Context, entity *BookingEntity) error {
@@ -88,10 +92,10 @@ func (r *Repository) ListBookings(ctx context.Context, from, to *time.Time, even
 	query := r.db.WithContext(ctx)
 
 	if from != nil {
-		query = query.Where("start_time >= ?", from.Format(time.RFC3339))
+		query = query.Where("start_time >= ?", from.Format("2006-01-02 15:04:05.999999999+00:00"))
 	}
 	if to != nil {
-		query = query.Where("start_time < ?", to.Format(time.RFC3339))
+		query = query.Where("start_time < ?", to.Format("2006-01-02 15:04:05.999999999+00:00"))
 	}
 	if eventTypeID != nil && *eventTypeID != "" {
 		query = query.Where("event_type_id = ?", *eventTypeID)
@@ -106,7 +110,7 @@ func (r *Repository) FindConflictingBooking(ctx context.Context, eventTypeID str
 	var entity BookingEntity
 	err := r.db.WithContext(ctx).Where(
 		"event_type_id = ? AND start_time < ? AND end_time > ?",
-		eventTypeID, endTime.Format(time.RFC3339), startTime.Format(time.RFC3339),
+		eventTypeID, endTime.Format("2006-01-02 15:04:05.999999999+00:00"), startTime.Format("2006-01-02 15:04:05.999999999+00:00"),
 	).First(&entity).Error
 	if err != nil {
 		return nil, err

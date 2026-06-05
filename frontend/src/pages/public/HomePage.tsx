@@ -15,13 +15,13 @@ export const HomePage = () => {
 
   return (
     <PublicLayout>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom data-testid="page-heading">
         Выберите тип события
       </Typography>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} data-testid="event-types-grid">
         {eventTypes.map((et) => (
           <Grid item xs={12} sm={6} md={4} key={et.id}>
-            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }} data-testid={`event-type-card-${et.id}`}>
               <CardContent sx={{ flexGrow: 1 }}>
                 <Typography variant="h6" gutterBottom>
                   {et.name}
@@ -35,6 +35,7 @@ export const HomePage = () => {
                   size="small"
                   variant="contained"
                   onClick={() => navigate(`/slots?eventTypeId=${et.id}`)}
+                  data-testid={`select-event-button-${et.id}`}
                 >
                   Выбрать
                 </Button>

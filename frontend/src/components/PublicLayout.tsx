@@ -11,15 +11,15 @@ export const PublicLayout = ({ children }: PublicLayoutProps) => {
     <Box sx={{ minHeight: '100vh', bgcolor: '#f5f5f5' }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
+          <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }} data-testid="app-title">
             Система бронирования
           </Typography>
-          <Button color="inherit" component={Link} to="/admin">
+          <Button color="inherit" component={Link} to="/admin" data-testid="admin-link">
             Админка
           </Button>
         </Toolbar>
       </AppBar>
-      <Container maxWidth="md" sx={{ py: 4 }}>
+      <Container maxWidth="md" sx={{ py: 4 }} data-testid="main-content">
         {children}
       </Container>
     </Box>
