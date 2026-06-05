@@ -251,7 +251,7 @@ func (s *Service) isWeekday(t time.Time) bool {
 func (s *Service) getDefaultWindow() (time.Time, time.Time) {
 	now := time.Now().In(s.loc)
 	start := time.Date(now.Year(), now.Month(), now.Day(), workingHoursStart, 0, 0, 0, s.loc)
-	end := time.Date(now.Year(), now.Month(), now.Day(), workingHoursEnd, 0, 0, 0, s.loc)
+	end := time.Date(now.Year(), now.Month(), now.Day(), workingHoursEnd, 0, 0, 0, s.loc).AddDate(0, 0, bookingWindowDays)
 	return start, end
 }
 
