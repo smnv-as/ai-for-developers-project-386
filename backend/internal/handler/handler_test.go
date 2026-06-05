@@ -175,7 +175,15 @@ func TestSlotGeneration(t *testing.T) {
 		Description: "30 min",
 	})
 
-	slots, err := svc.ListSlots(ctx, eventType.ID, nil, nil)
+	// Use a future weekday's working hours so the test is independent of the current time
+	day := time.Now().AddDate(0, 0, 1)
+	for day.Weekday() == time.Saturday || day.Weekday() == time.Sunday {
+		day = day.AddDate(0, 0, 1)
+	}
+	from := time.Date(day.Year(), day.Month(), day.Day(), 9, 0, 0, 0, time.UTC)
+	to := time.Date(day.Year(), day.Month(), day.Day(), 18, 0, 0, 0, time.UTC)
+
+	slots, err := svc.ListSlots(ctx, eventType.ID, &from, &to)
 	if err != nil {
 		t.Fatalf("failed to list slots: %v", err)
 	}
